@@ -1,0 +1,11 @@
+.bar {
+  color: red;
+}
+
+.bar::before {
+  content: 'hello';
+}
+
+.bar::after {
+  content: 'world';
+}

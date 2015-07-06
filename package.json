@@ -1,0 +1,31 @@
+{
+  "name": "miaow-css-pack",
+  "description": "Miaow的CSS打包工具",
+  "version": "0.0.1",
+  "repository": "miaowjs/miaow-css-pack",
+  "author": {
+    "name": "anhulife",
+    "email": "anhulife@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "miaow",
+    "css",
+    "pack"
+  ],
+  "dependencies": {
+    "async": "~0.9.0",
+    "lodash": "~3.8.0",
+    "postcss": "~4.1.11"
+  },
+  "devDependencies": {
+    "miaow": "^1.4.0",
+    "mocha": "^2.2.4"
+  },
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha"
+  },
+  "engines": {
+    "node": ">=0.10"
+  }
+}
