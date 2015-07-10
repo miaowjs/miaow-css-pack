@@ -1,7 +1,7 @@
 {
   "name": "miaow-css-pack",
   "description": "Miaow的CSS打包工具",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "repository": "miaowjs/miaow-css-pack",
   "author": {
     "name": "anhulife",
@@ -19,7 +19,7 @@
     "postcss": "~4.1.11"
   },
   "devDependencies": {
-    "miaow": "^1.4.0",
+    "miaow": "^1.8.0",
     "mocha": "^2.2.4"
   },
   "scripts": {

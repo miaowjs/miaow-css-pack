@@ -37,7 +37,18 @@ describe('miaow-css-pack', function () {
   });
 
   it('导入', function () {
-    assert.equal(log.modules['foo.css'].hash, 'e6480440231ed9ce237264c43db10f47');
+    assert.equal(log.modules['foo.css'].hash, 'dd1334d53c8a2af552a68da3a44107c3');
     assert.equal(log.modules['baz.css'].hash, 'e2ec5b9e16b840287fa65209d3f71082');
+  });
+
+  it('添加依赖信息', function () {
+    var dependencies = log.modules['foo.css'].dependencies;
+
+    assert.equal(dependencies.length, 1);
+    [
+      'bar.css'
+    ].forEach(function (srcPath) {
+        assert.notEqual(dependencies.indexOf(srcPath), -1);
+      });
   });
 });

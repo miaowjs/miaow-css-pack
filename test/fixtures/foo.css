@@ -1,5 +1,5 @@
-@import "bar.css" ;
-@import "baz.css" print;
+@import "./bar.css" ;
+@import "./baz.css" print;
 
 .foo {
   color: black;
