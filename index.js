@@ -1,8 +1,11 @@
 var _ = require('lodash');
 var async = require('async');
+var mutil = require('miaow-util');
 var postcss = require('postcss');
 
-module.exports = function (option, cb) {
+var pkg = require('./package.json');
+
+function pack(option, cb) {
   var root = postcss.parse(this.contents, {from: this.srcAbsPath});
   var reg = /^\s*(?:url)?\s*\(?\s*?['"]([\w\_\/\.\-]+)['"]\s*\)?\s*$/;
   var importInfoList = [];
@@ -55,4 +58,6 @@ module.exports = function (option, cb) {
     module.contents = new Buffer(root.toResult().css);
     cb();
   });
-};
+}
+
+module.exports = mutil.plugin(pkg.name, pkg.version, pack);
