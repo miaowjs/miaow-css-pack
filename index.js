@@ -6,7 +6,13 @@ var postcss = require('postcss');
 var pkg = require('./package.json');
 
 function pack(option, cb) {
-  var root = postcss.parse(this.contents, {from: this.srcAbsPath});
+  var contents = this.contents.toString();
+
+  if (!contents.trim()) {
+    return cb();
+  }
+
+  var root = postcss.parse(contents, {from: this.srcAbsPath});
   var reg = /^\s*(?:url)?\s*\(?\s*?['"]([\w\_\/\.\-]+)['"]\s*\)?\s*$/;
   var importInfoList = [];
 
