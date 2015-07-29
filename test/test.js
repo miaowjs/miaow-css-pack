@@ -42,13 +42,13 @@ describe('miaow-css-pack', function () {
   });
 
   it('添加依赖信息', function () {
-    var dependencies = log.modules['foo.css'].dependencies;
+    var dependList = log.modules['foo.css'].dependList;
 
-    assert.equal(dependencies.length, 1);
+    assert.equal(dependList.length, 1);
     [
       'bar.css'
     ].forEach(function (srcPath) {
-        assert.notEqual(dependencies.indexOf(srcPath), -1);
+        assert.notEqual(dependList.indexOf(srcPath), -1);
       });
   });
 });

@@ -28,9 +28,6 @@ function pack(option, cb) {
         return cb(err);
       }
 
-      // 添加依赖信息
-      module.dependencies.push(importModule.srcPath);
-
       return cb(null, {
         root: postcss.parse(importModule.contents, {from: importModule.srcAbsPath}),
         index: importInfo.index
