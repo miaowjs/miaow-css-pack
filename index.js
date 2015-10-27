@@ -1,66 +1,96 @@
 var _ = require('lodash');
 var async = require('async');
-var mutil = require('miaow-util');
+var path = require('path');
 var postcss = require('postcss');
 
 var pkg = require('./package.json');
 
-function pack(option, cb) {
-  var contents = this.contents.toString();
+module.exports = function(options, callback) {
+  var context = this;
+  var contents = context.contents.toString();
 
   if (!contents.trim()) {
-    return cb();
+    return callback();
   }
 
-  var root = postcss.parse(contents, {from: this.srcAbsPath});
+  var root;
+  try {
+    root = postcss.parse(contents, {from: this.srcAbsPath});
+  } catch (err) {
+    return callback(err);
+  }
+
   var reg = /^\s*(?:url)?\s*\(?\s*?['"]([\w\_\/\.\-]+)['"]\s*\)?\s*$/;
   var importInfoList = [];
 
   // 查找所有需要打包的路径和索引值
-  root.nodes.forEach(function (node, index) {
+  root.nodes.forEach(function(node, index) {
     var srcPathInfo;
-    if (node.type === 'atrule' && node.name === 'import' && (srcPathInfo = node.params.match(reg))) {
-      importInfoList.push({
-        srcPath: srcPathInfo[1],
-        index: index
-      });
+    if (node.type === 'atrule' && node.name === 'import') {
+      srcPathInfo = node.params.match(reg);
+
+      if (srcPathInfo) {
+        importInfoList.push({
+          src: srcPathInfo[1],
+          index: index
+        });
+      }
     }
   });
 
-  var module = this;
-  async.mapSeries(importInfoList, function (importInfo, cb) {
-    module.getModule(importInfo.srcPath, function (err, importModule) {
+  async.mapSeries(
+    importInfoList,
+    function(importInfo, callback) {
+      context.resolveModule(importInfo.src, function(err, module) {
+        if (err) {
+          return callback(err);
+        }
+
+        context.addFileDependency(module.src);
+
+        var root;
+        try {
+          root = postcss.parse(module.contents, {from: path.join(context.context, module.src)});
+        } catch (err) {
+          return callback(err);
+        }
+
+        return callback(null, {
+          root: root,
+          index: importInfo.index
+        });
+      });
+    },
+
+    function(err, importRootList) {
       if (err) {
-        return cb(err);
+        return callback(err);
       }
 
-      return cb(null, {
-        root: postcss.parse(importModule.contents, {from: importModule.srcAbsPath}),
-        index: importInfo.index
+      // 修改节点信息
+      var nodes = [];
+      root.nodes.forEach(function(node, index) {
+        var importRoot = _.find(importRootList, {index: index});
+
+        if (importRoot) {
+          nodes.push.apply(nodes, importRoot.root.nodes);
+        } else {
+          nodes.push(node);
+        }
       });
-    });
-  }, function (err, importRootList) {
-    if (err) {
-      return cb(err);
-    }
 
-    // 修改节点信息
-    var nodes = [];
-    root.nodes.forEach(function (node, index) {
-      var importRoot = _.find(importRootList, 'index', index);
+      root.nodes = nodes;
 
-      if (importRoot) {
-        nodes.push.apply(nodes, importRoot.root.nodes);
-      } else {
-        nodes.push(node);
+      try {
+        context.contents = new Buffer(root.toResult().css);
+      } catch (err) {
+        return callback(err);
       }
+
+      callback();
     });
+};
 
-    root.nodes = nodes;
-
-    module.contents = new Buffer(root.toResult().css);
-    cb();
-  });
-}
-
-module.exports = mutil.plugin(pkg.name, pkg.version, pack);
+module.exports.toString = function() {
+  return [pkg.name, pkg.version].join('@');
+};

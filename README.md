@@ -2,6 +2,8 @@
 
 > Miaow的CSS打包工具,以`@import`为打包关键字
 
+## 使用效果
+
 ```css
 /* foo.css */
 @import "bar.css" ;
@@ -41,27 +43,5 @@
 
 .foo {
   color: black;
-}
-```
-
-## 使用说明
-
-### 安装
-
-```
-npm install miaow-css-pack --save-dev
-```
-
-### 在项目的 miaow.config.js 中添加模块的 tasks 设置
-
-```javascript
-//miaow.config.js
-module: {
-  tasks: [
-    {
-      test: /\.css$/,
-      plugins: ['miaow-css-pack']
-    }
-  ]
 }
 ```
