@@ -46,8 +46,6 @@ module.exports = function(options, callback) {
           return callback(err);
         }
 
-        context.addFileDependency(module.src);
-
         var root;
         try {
           root = postcss.parse(module.contents, {from: path.join(context.context, module.src)});
